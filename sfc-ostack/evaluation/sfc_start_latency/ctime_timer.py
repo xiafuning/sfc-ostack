@@ -95,6 +95,8 @@ def run_server_pm(addr, output_file=False):
         logger.debug('Finish %d rounds of tests' % TEST_ROUND)
 
         if output_file:
+            with open('./hello.csv', 'w+') as test_f:
+                pass
             # Store test result in a csv file
             with open(OUTPUT_FILE, 'w') as out_file:
                 for ts_lst in sfc_ts_lst:
@@ -141,7 +143,7 @@ if __name__ == "__main__":
     group.add_argument('-s', '--server', metavar='Address', type=str,
                        help='Run in UDP server mode')
     parser.add_argument('-m', '--mode', type=str,
-                        choices=['al', 'pm'], help='Mode for measurements')
+                        choices=['pm'], help='Mode for measurements')
     parser.add_argument('-d', '--max_delay', type=float, default=0.005,
                         help='Maximal allowed packet latency in second')
     parser.add_argument('-r', '--round', type=int, default=5,

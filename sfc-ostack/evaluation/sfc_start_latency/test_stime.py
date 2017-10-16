@@ -3,8 +3,9 @@
 # vim:fenc=utf-8
 
 """
-About: Run SFC creation time measurements
-       * Based on payload modification(pm)
+About: SFC start time measurements
+
+       Use payload modification(pm) mode of ./st_timer.py
 
        - Before SFC creation: start with b'a'
        - After SFC creation: start with b'b'
@@ -32,15 +33,15 @@ def _get_floating_ip(pt_name):
 
 
 def test_sfc_ct(mode=0):
-    """Test chain creation time
+    """Test chain start time
 
     MARK: SHOULD be split into small funcs...
     """
-    print('[TEST] Test SFC creation time with python forwarding.')
+    print('[TEST] Test SFC start time with python forwarding.')
 
     for srv_num in range(MIN_SF_NUM, MAX_SF_NUM + 1):
         if not DEBUG_MODE:
-            ts_out_file = 'cen-pyf-%d-sfts-pm-%d.csv' % (srv_num, mode)
+            ts_out_file = 'sfts-s%d-m%d.csv' % (srv_num, mode)
             CRT_RUN_CTIMER = RUN_CTIMER
             CRT_RUN_CTIMER += '-o %s ' % ts_out_file
             CRT_RUN_CTIMER += '> /dev/null 2>&1 &'
@@ -71,20 +72,17 @@ def test_sfc_ct(mode=0):
             ssh_clt.close()
 
         print('[DEBUG] Start creating and deleting SFC')
-        # MARK: Run some additional test rounds to let the ctime_timer exit
-        # properly... immer drei...
-        ADD_ROUND = 3
         eva_sfc_mgr = EvaSFCMgr(SFC_CONF, INIT_SCRIPT)
 
         if mode == 0:
             print('[TEST] Run tests in mode 0.')
-            # Chain creation time stamp
-            start_ts_file = 'cen-pyf-%d-ccts.csv' % srv_num
+            # Chain start time stamp
+            start_ts_file = 'ccts-s%d.csv' % srv_num
             ccts_lst = list()
             for round_num in range(1, TEST_ROUND + 1 + ADD_ROUND):
                 print('[DEBUG] Test round: %d' % round_num)
                 time.sleep(10)  # recv some A packets
-                # Start ts of SFC creation
+                # Start ts of SFC start
                 ccts_lst.append(time.time())
                 srv_chain = eva_sfc_mgr.create_sc(srv_num, sf_wait_time=None)
                 port_chain = eva_sfc_mgr.create_pc(srv_chain)
@@ -116,15 +114,17 @@ def test_sfc_ct(mode=0):
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(description='Run SFC creation time test.')
+    ap = argparse.ArgumentParser(description='Run SFC start time test.')
     ap.add_argument('min_sf', type=int, help='Minimal number of SF server')
     ap.add_argument('max_sf', type=int, help='Maximal number of SF server')
     ap.add_argument('-r', '--round', type=int, default=1,
                     help='Number of rounds for testing')
+    ap.add_argument('--add_round', type=int, default=1,
+                    help='Additional round for testing')
     ap.add_argument('-m', '--mode', type=int, choices=[0, 1], default=0,
                     help=('Measure mode.'
-                          '0: Measure SFC creation time, no consideration on SFC Gap time.'
-                          '1: Measure the mimimized SFC Gap time.')
+                          '0: Without checking for SF status.'
+                          '1: With checking for SF status, smaller Gap-time')
                     )
 
     ap.add_argument('dst_addr', metavar='IP:PORT',
@@ -160,6 +160,7 @@ if __name__ == "__main__":
     DST_ADDR = args.dst_addr
     DST_FIP = args.dst_fip
     TEST_ROUND = args.round
+    ADD_ROUND = args.add_round
 
     SSH_USER = 'ubuntu'
     SFC_CONF = './sfc_conf.yaml'

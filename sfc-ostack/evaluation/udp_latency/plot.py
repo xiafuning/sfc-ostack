@@ -30,6 +30,7 @@ font_size = 10
 font_name = 'Universalis ADF Cd Std'
 
 mpl.rc('font', family=font_name)
+# mpl.use('TkAgg')
 
 fig, ax = plt.subplots()
 
@@ -87,4 +88,6 @@ ax.legend(handles, labels, fontsize=font_size,
           loc='upper left')
 ax.grid()
 
-fig.savefig('./udp_latency_rtt_result.png', dpi=500, bbox_inches='tight')
+fig.show()
+# fig.savefig('./udp_latency_rtt.eps', format='eps', bbox_inches='tight')
+plt.show()

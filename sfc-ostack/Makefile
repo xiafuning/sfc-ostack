@@ -79,25 +79,13 @@ uninstall-all-pkgs:
 #  Local Dev  #
 ###############
 
-LOCAL_HOST="stack@127.0.0.1"
-# Local github repo
-LOCAL_GH="../../sfc-ostack-gh"
-# Local bitbucket repo
-LOCAL_BB="../../sfc-openstack"
-
+CUR_LOC = $(shell pwd)
+LOCAL_LOC="/opt/stack/dev_project/sfc-ostack-gh"
 TEST_SERVER="zuo@192.168.157.81"
 REMOTE_LOC="~/"
 
-sync-bitbucket-local:
-	@echo "Sync codes to local bitbucket repo..."
-	@rsync -rav --exclude="venv" --progress --delete $(LOCAL_GH) $(LOCAL_HOST):$(LOCAL_BB)
-
-sync-github-local:
-	@echo "Sync codes to local github repo..."
-	@rsync -rav --exclude="venv" --delete $(LOCAL_BB) $(LOCAL_HOST):$(LOCAL_GH)
-
 upload-test-server:
 	@echo "Upload to the remote test server: $(TEST_SERVER)"
-	@rsync -rav -e ssh --exclude="venv" --progress --delete $(LOCAL_GH) $(TEST_SERVER):$(REMOTE_LOC)
+	@rsync -rav -e ssh --exclude="venv" --progress --delete $(LOCAL_LOC) $(TEST_SERVER):$(REMOTE_LOC)
 
 # vim:ft=make
