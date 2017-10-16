@@ -1,0 +1,3 @@
+# Simple Research Framework for SFC on OpenStack #
+
+Currently under heavy development for master thesis...
